@@ -13,6 +13,23 @@ var video_data = {
     position: 42, // default start position, skips copyright message
 }
 
+// Values for keydown
+const keyboard_keys = {
+    KEY_K: 32,
+    KEY_SPACE: 75,
+    KEY_F: 70,
+    KEY_RIGHT_ARROW: 39,
+    KEY_L: 76,
+    KEY_LEFT_ARROW: 37,
+    KEY_J: 74,
+    KEY_UP_ARROW: 38,
+    KEY_DOWN_ARROW: 40,
+    KEY_DOT: 190,
+    KEY_COMMA: 188,
+    KEY_SLASH_FORWARD: 191,
+    KEY_M: 77
+}
+
 // get unique video id
 var video_id = window.location.href.replace(".preview", "").replace("https://mediaplayer.auckland.ac.nz", "");
 
@@ -155,87 +172,87 @@ document.addEventListener('keydown', function(event) {
     controls.setAttribute("shown", "true");
     timeout = setTimeout(function(){ controls.removeAttribute("shown"); }, 1000);
 
-    // Pause with spacebar, 'k'
-    if(event.keyCode == 32 || event.keyCode == 75) {
-        if (vid.paused) {
-            vid.play();
-            show_popup("play_arrow", "Play");
-        } else {
-            vid.pause();
-            show_popup("pause", "Pause");
-        }
-    }
+    switch (event.keyCode){
+        // Pause with spacebar, 'k'
+        case keyboard_keys.KEY_K:
+        case keyboard_keys.KEY_SPACE:
+            console.log("pauseingfngds");
+            if (vid.paused) {
+                vid.play();
+                show_popup("play_arrow", "Play");
+            } else {
+                vid.pause();
+                show_popup("pause", "Pause");
+            }
+            break;
 
-    // Go fullscreen with 'f'
-    if(event.keyCode == 70) {
-        document.getElementsByClassName("shaka-fullscreen-button")[0].click();
-    }
+        // Full screen with 'f'
+        case keyboard_keys.KEY_F:
+            document.getElementsByClassName("shaka-fullscreen-button")[0].click();
+            break;
 
-    // Seek forwards with '➡', 'l'
-    if(event.keyCode == 39 || event.keyCode == 76) {
-        vid.currentTime = vid.currentTime + 5;
-        show_popup("skip_next", "Seek");
-    }
+        // Seek forwards with '➡', 'l'
+        case keyboard_keys.KEY_RIGHT_ARROW:
+        case keyboard_keys.KEY_L:
+            vid.currentTime = vid.currentTime + 5;
+            show_popup("skip_next", "Seek");
+            break;
 
-    // Seek backwards with '⬅', 'j'
-    if(event.keyCode == 37 || event.keyCode == 74) {
-        vid.currentTime = vid.currentTime - 5;
-        show_popup("skip_previous", "Seek");
-    }
+        // Seek backwards with '⬅', 'j'
+        case keyboard_keys.KEY_LEFT_ARROW:
+        case keyboard_keys.KEY_J:
+            vid.currentTime = vid.currentTime - 5;
+            show_popup("skip_previous", "Seek");
+            break;
 
-    // Volume up with '⬆'
-    if(event.keyCode == 38) {
-        vid.volume = vid.volume + 0.05;
-        if (vid.volume > 0.95) {
-            vid.volume = 1;
-        }
-        show_popup("volume_up", Math.round(vid.volume*100));
-    }
+        // Volume up with '⬆'
+        case keyboard_keys.KEY_UP_ARROW:
+            vid.volume = vid.volume + 0.05;
+            if (vid.volume > 0.95) {
+                vid.volume = 1;
+            }
+            show_popup("volume_up", Math.round(vid.volume*100));
 
-    // Volume up with '⬇'
-    if(event.keyCode == 40) {
-        vid.volume = vid.volume - 0.05;
-        if (vid.volume < 0.05) {
-            vid.volume = 0;
-        }
-        show_popup("volume_down", Math.round(vid.volume*100));
-    }
+        // Volume up with '⬇'
+        case keyboard_keys.KEY_DOWN_ARROW:
+            vid.volume = vid.volume - 0.05;
+            if (vid.volume < 0.05) {
+                vid.volume = 0;
+            }
+            show_popup("volume_down", Math.round(vid.volume*100));
 
-    // Increase speed with '.'
-    if(event.keyCode == 190) {
-        vid.playbackRate = vid.playbackRate + 0.25;
-        if (vid.playbackRate > 3) {
-            vid.playbackRate = 3;
-        }
-        intended_speed = vid.playbackRate;
-        show_popup("fast_forward", vid.playbackRate + "x");
-    }
+        // Increase speed with '.'
+        case keyboard_keys.KEY_DOT:
+            vid.playbackRate = vid.playbackRate + 0.25;
+            if (vid.playbackRate > 3) {
+                vid.playbackRate = 3;
+            }
+            intended_speed = vid.playbackRate;
+            show_popup("fast_forward", vid.playbackRate + "x");
 
-    // Decrease speed with ','
-    if(event.keyCode == 188) {
-        vid.playbackRate = vid.playbackRate - 0.25;
-        if (vid.playbackRate < 0.25) {
-            vid.playbackRate = 0.25;
-        }
-        intended_speed = vid.playbackRate;
-        show_popup("fast_rewind", vid.playbackRate + "x");
-    }
+        // Decrease speed with ','
+        case keyboard_keys.KEY_COMMA:
+            vid.playbackRate = vid.playbackRate - 0.25;
+            if (vid.playbackRate < 0.25) {
+                vid.playbackRate = 0.25;
+            }
+            intended_speed = vid.playbackRate;
+            show_popup("fast_rewind", vid.playbackRate + "x");
 
-    // Reset speed with '/'
-    if(event.keyCode == 191) {
-        vid.playbackRate = 1;
-        intended_speed = vid.playbackRate;
-        show_popup("speed", "1x");
-    }
-
-    // Mute/unmute with 'm'
-    if(event.keyCode == 77) {
-        if (vid.muted) {
-            vid.muted = false;
-            show_popup("volume_up", "Unmuted");
-        } else {
-            vid.muted = true;
-            show_popup("volume_off", "Muted");
-        }
+        // Reset speed with '/'
+        case keyboard_keys.KEY_SLASH_FORWARD:
+            vid.playbackRate = 1;
+            intended_speed = vid.playbackRate;
+            show_popup("speed", "1x");
+        
+        // Toggle mute with 'm'
+        case keyboard_keys.KEY_M:
+            if (vid.muted) {
+                vid.muted = false;
+                show_popup("volume_up", "Unmuted");
+            } else {
+                vid.muted = true;
+                show_popup("volume_off", "Muted");
+            }
     }
 });
