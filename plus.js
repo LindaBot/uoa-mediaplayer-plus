@@ -176,7 +176,6 @@ document.addEventListener('keydown', function(event) {
         // Pause with spacebar, 'k'
         case keyboard_keys.KEY_K:
         case keyboard_keys.KEY_SPACE:
-            console.log("pauseingfngds");
             if (vid.paused) {
                 vid.play();
                 show_popup("play_arrow", "Play");
