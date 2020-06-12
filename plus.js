@@ -30,6 +30,12 @@ const keyboard_keys = {
     KEY_M: 77
 }
 
+// Store a list of keys that the extension need to override
+let key_list = [];
+for (key in keyboard_keys){
+    key_list.push(keyboard_keys[key])
+}
+
 // get unique video id
 var video_id = window.location.href.replace(".preview", "").replace("https://mediaplayer.auckland.ac.nz", "");
 
@@ -161,8 +167,13 @@ document.arrive(".shaka-volume-bar-container", function() {
 
 // Keybindings
 document.addEventListener('keydown', function(event) {
+    // Check if we need to prevent default behavior
+    if (!key_list.includes(event.keyCode) || event.ctrlKey || event.altKey || event.metaKey){
+        return;
+    }
+    
 
-    // prevent unexpected browser behaviour
+    // Prevent player and browser default behavior
     event.preventDefault();
     document.activeElement.blur();
 
@@ -173,7 +184,7 @@ document.addEventListener('keydown', function(event) {
     timeout = setTimeout(function(){ controls.removeAttribute("shown"); }, 1000);
 
     switch (event.keyCode){
-        // Pause with spacebar, 'k'
+        // Pause with space bar, 'k'
         case keyboard_keys.KEY_K:
         case keyboard_keys.KEY_SPACE:
             if (vid.paused) {
@@ -211,6 +222,7 @@ document.addEventListener('keydown', function(event) {
                 vid.volume = 1;
             }
             show_popup("volume_up", Math.round(vid.volume*100));
+            break;
 
         // Volume up with '⬇'
         case keyboard_keys.KEY_DOWN_ARROW:
@@ -219,6 +231,7 @@ document.addEventListener('keydown', function(event) {
                 vid.volume = 0;
             }
             show_popup("volume_down", Math.round(vid.volume*100));
+            break;
 
         // Increase speed with '.'
         case keyboard_keys.KEY_DOT:
@@ -228,6 +241,7 @@ document.addEventListener('keydown', function(event) {
             }
             intended_speed = vid.playbackRate;
             show_popup("fast_forward", vid.playbackRate + "x");
+            break;
 
         // Decrease speed with ','
         case keyboard_keys.KEY_COMMA:
@@ -237,12 +251,14 @@ document.addEventListener('keydown', function(event) {
             }
             intended_speed = vid.playbackRate;
             show_popup("fast_rewind", vid.playbackRate + "x");
+            break;
 
         // Reset speed with '/'
         case keyboard_keys.KEY_SLASH_FORWARD:
             vid.playbackRate = 1;
             intended_speed = vid.playbackRate;
             show_popup("speed", "1x");
+            break;
         
         // Toggle mute with 'm'
         case keyboard_keys.KEY_M:
@@ -253,5 +269,6 @@ document.addEventListener('keydown', function(event) {
                 vid.muted = true;
                 show_popup("volume_off", "Muted");
             }
+            break;
     }
 });
